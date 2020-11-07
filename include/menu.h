@@ -9,7 +9,7 @@
 // выводит отформатированное значение таймера
 String countdownAsStr(const int16_t&);
 // выводит отформатированное значение мощности компрессора
-String airToStr(const int8_t&);
+String airToStr(const uint8_t&);
 
 enum Selector : uint8_t {  // селектор главного меню. в нем может быть выбран только один из трех пунктов
 	TEMP = 0,

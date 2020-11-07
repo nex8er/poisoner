@@ -426,7 +426,7 @@ String countdownAsStr(const int16_t& timeValue) {
 		return String(buff);
 }
 
-String airToStr(const int8_t& air) {
+String airToStr(const uint8_t& air) {
 	if (air <= 0) {
 		return String("OFF");
 	} else if (air == 100) {
