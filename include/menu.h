@@ -21,6 +21,7 @@ class ItemMenu {		// любой элемент меню
 public:
 	ItemMenu();
 	ItemMenu(uint8_t, uint8_t, uint8_t, uint8_t, String);
+	ItemMenu(uint8_t, uint8_t, uint8_t, uint8_t, String, boolean);
 	uint8_t id;						// идентификатор 
 	uint8_t size;					// сколько ячеек занимает
 	uint8_t locateX;			// позиция по X
@@ -47,6 +48,8 @@ public:
 	void turn(bool);
 	// отработка клика энкодера
 	void click(bool);
+	// отработка удержания энкодера (открывает меню "сохранить")
+	void hold(void);
 
 private:
 	
@@ -65,9 +68,16 @@ private:
 	boolean blinkFlag = false;
 	// флаг, указывающий на то, что на экране есть выделенный элемент
 	boolean highlightFlag = false;
-
+	// влаг меню сохранения
+	boolean saveMenuFlag = false;
 	// структура главного меню, состоящая из списка элементов, созданных в createMainMenu()
 	ItemMenu itemList[10];
+	// структура меню сохранения
+	ItemMenu saveMenu[3] = {
+		ItemMenu(0, 14, 1, 0, "SAVE to EEPROM"),
+		ItemMenu(1, 14, 1, 1, "hold ENC again"),
+		ItemMenu(2, 5, 11, 1, "done!")
+	};
 	// ???
 	uint8_t selectedItem = 0;
 	// указатель выбранного параметра меню для изменения 
@@ -75,7 +85,7 @@ private:
 	// указатель уровня меню
 	uint8_t selectLevel = 0;
 	// таймер для выхода из настроек при бездействии
-	uint8_t selectTimeout = 0;
+	int8_t selectTimeout = 0;
 
 	// для временного хранения изменямого значения 
 	int16_t changebleValue = RESET;

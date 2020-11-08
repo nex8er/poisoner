@@ -61,12 +61,19 @@ void Menu::run() {
 	// выход из настроек по таймауту
 	if (selectTimeout > 0) {
 		selectTimeout--;
-	} else {
+	} else if (selectTimeout == 0) {
+		selectTimeout--;
+		lcd->clear();
+		saveMenuFlag = false;
 		selectLevel = NOT_SEL;
 		// делаем все элементы видимыми
 		blink(false);
 	}
 	
+	if (saveMenuFlag) {
+		return;
+	}
+
 	// в режиме выбора параметра - мигаем
 	if (selectLevel == ITEM_SELECT) {
 		blink(blinkFlag);
@@ -127,6 +134,30 @@ void Menu::click(bool param) {
 		confirm();
 	}
 }
+
+void Menu::hold() {
+	if (selectLevel != NOT_SEL) {
+		return;
+	}
+	selectTimeout = 10;
+	lcd->clear();
+	if (!saveMenuFlag) {
+		// первая обработка
+		saveMenuFlag = true;
+		printItem(saveMenu[0]);
+		printItem(saveMenu[1]);
+	} else {
+		// вторая обработка
+		if (system->settingsSave()) {
+			printItem(saveMenu[0]);
+			printItem(saveMenu[2]);
+			delay(1000);
+		}
+		saveMenuFlag = false;
+		selectTimeout = 0;
+	}
+}
+
 
 void Menu::changeItem(bool dir) {
 	switch (selected) {
@@ -348,8 +379,8 @@ void Menu::createMainMenu() {
 	itemList[TimerValue] = ItemMenu(TimerValue, 5, 3, 1, countdownAsStr(system->countdownGet()));
 	itemList[AirSymbol] = ItemMenu(AirSymbol, 3, 10, 1, "Air");
 	itemList[AirValue] = ItemMenu(AirValue, 3, 13, 1, airToStr(system->airGet()));
-
 }
+
 void Menu::printItem(const ItemMenu& item) {
 	// устанавливаем положение курсора
 	lcd->setCursor(item.locateX, item.locateY);

@@ -24,7 +24,7 @@ Menu menu(&selfSystem, &lcd);
 void setup() {
 	Serial.begin(9600);
 
-	//установка пинов
+	// установка пинов
 	pinMode(PUMP_PIN, OUTPUT);
 	pinMode(BUZZER_PIN, OUTPUT);
 	pinMode(HEATER_PIN, OUTPUT);
@@ -33,20 +33,22 @@ void setup() {
 	AIR_OFF;
 	HEATER_OFF;
 	
-	//инициализация дисплея
+	// инициализация дисплея
   lcd.begin(16,2);
 	lcd.home();
-  lcd.print("Init...");
+  lcd.print("Initialization");
 
-	//выбор типа энкодера
+	// выбор типа энкодера
 	enc.setType(TYPE1);
-	//передаем объекту системы ссылку на датчик
+	// передаем объекту системы ссылку на датчик
 	selfSystem.tempSensorInit(&ds);
+	// загрузка параметров из EEPROM
+	selfSystem.settingsLoad();
 
-	//если все хорошо, подаем звуковой сигнал
+	// если все хорошо, подаем звуковой сигнал
 	tone(BUZZER_PIN, 700, 200);
 	
-	//инициализация дисплея
+	// инициализация дисплея
 	menu.init();
 	menu.showMain();
 
@@ -58,7 +60,7 @@ void loop() {
 	menu.run();
 	enc.tick();
 	
-	//обработка энкодера
+	// обработка энкодера
 	if (enc.isRight()) {
 		menu.turn(RIGHT);
 	}
@@ -68,6 +70,13 @@ void loop() {
 	if (enc.isClick()) {
 		menu.click(true);
 
+	}
+	if (enc.isHolded()) {
+		menu.hold();
+	}
+	if (enc.isDouble()) {
+		int16_t defaultTimer = 1200;
+		selfSystem.countdownSet(defaultTimer);
 	}
 
 }

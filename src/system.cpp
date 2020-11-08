@@ -1,5 +1,9 @@
 #include "system.h"
 
+// метки 
+#define STORE_TEMP 0
+#define STORE_AIR 1
+
 void System::run(){
 	// реализация задержки
 	currentTime = millis(); 
@@ -19,8 +23,6 @@ void System::run(){
 	countdownCheck();
 	air();
 }
-
-
 void System::tempSensorInit(DallasTemperature* _ds) {
 	sensor = _ds;
 	sensor->begin();
@@ -36,8 +38,6 @@ void System::tempSensorInit(DallasTemperature* _ds) {
 	// передаем в свойство класса
 	temperature = temp;
 }
-
-
 int8_t System::tempGet() {
 	// изначальное значение температуры
 	int8_t temp = -100;
@@ -67,12 +67,10 @@ int8_t System::tempGet() {
 	// если все хорошо
 	return temp;
 }
-
 void System::tempGetToProp() {
 	// просто передаем значение в свойство метода
 	temperature = tempGet();
 }
-
 void System::countdownCheck() {
 	if (countdownTimer > 0) {
 		countdownTimer--;
@@ -91,7 +89,6 @@ void System::countdownCheck() {
 		}
 	}
 }
-
 void System::countdownSet(int16_t& newValue) {
 	countdownTimer = newValue;
 }
@@ -106,11 +103,9 @@ void System::tempNeededSet(int8_t newValue) {
 		tempNeed = newValue;
 	}
 }
-
 bool System::liquidLevelCheck() const {
 	return digitalRead(LLS_PIN);
 }
-
 void System::heater() {
 	if (!liquidLevelCheck() || temperature < 1) {
 		HEATER_OFF;
@@ -123,7 +118,6 @@ void System::heater() {
 		HEATER_OFF;
 	}
 }
-
 void System::air() {
 	if (airPower == 0) {
 		AIR_OFF;
@@ -141,4 +135,13 @@ void System::airSet(int8_t newValue) {
 }
 uint8_t System::airGet() const {
 	return airPower;
+}
+bool System::settingsLoad(void) {
+	tempNeed = EEPROM.read(STORE_TEMP);
+	airPower = EEPROM.read(STORE_AIR); 
+}
+bool System::settingsSave(void) {
+	EEPROM.write(STORE_TEMP, tempNeed);
+	EEPROM.write(STORE_AIR, airPower);
+	return true;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <EEPROM.h>
 #include <DallasTemperature.h>
 #include "config.h"
 
@@ -32,7 +33,10 @@ public:
 	void airSet(int8_t);
 	// возвращает текущий уровень мощности помпы подачи воздуха
 	uint8_t airGet(void) const;
-
+	// сохранение текущих параметров в eeprom
+	bool settingsSave(void);
+	// загрузка параметров из eeprom
+	bool settingsLoad(void);
 	// флаг ошибки
 	ErrorList ERR = OK;
 
@@ -45,6 +49,7 @@ private:
 	void countdownCheck(void);
 	// обработка состояния воздушной помпы
 	void air(void);
+
 
 	// таймеры для задержки 
 	uint64_t loopTime = 0;
